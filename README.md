@@ -15,7 +15,7 @@ Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Linghe 
 
 
 
-![](figs/overview.jpg)
+![](overview.png)
 
 ---
 
@@ -35,7 +35,7 @@ Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Linghe 
 <details>
 <summary>ReCalKV achieves superior zero-shot performance under 50%–70% KV cache compression, with low perplexity on language modeling tasks and high accuracy on zero-shot QA benchmarks. (click to expand)</summary>
 <p align="center">
-  <img width="100%" src="figs/table1.jpg">
+  <img width="100%" src="table1.png">
 </p>
 
 </details>
@@ -44,7 +44,7 @@ Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Linghe 
 <summary>ReCalKV achieves strong and consistent performance across all LongBench tasks under 50%–70% KV cache compression, maintaining high accuracy and overall average scores. (click to expand)</summary>
 
 <p align="center">
-  <img width="100%" src="figs/table2.jpg">
+  <img width="100%" src="table2.png">
 </p>
 
 </details>
