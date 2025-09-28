@@ -1,6 +1,6 @@
 # ReCalKV: Low-Rank KV Cache Compression via Head Reordering and Offline Calibration
 
-Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Linghe Kong](https://www.cs.sjtu.edu.cn/~linghe.kong/), [Yulun Zhang](http://yulunzhang.com/), and [Xiaokang Yang](https://english.seiee.sjtu.edu.cn/english/detail/842_802.htm)
+Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Haotong Qin](https://htqin.github.io/), [Linghe Kong](https://www.cs.sjtu.edu.cn/~linghe.kong/), [Yulun Zhang](http://yulunzhang.com/), and [Xiaokang Yang](https://english.seiee.sjtu.edu.cn/english/detail/842_802.htm)
 
 [[arXiv](https://arxiv.org/pdf/2505.24357
 )]  [models]
