@@ -19,6 +19,7 @@ Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Haotong
 #### 🔥 News
 
 - **2025-05-29:** This repo is released.
+- **2025-06-01:** Code is released.
 
 ---
 
@@ -30,17 +31,117 @@ Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Haotong
 
 ---
 
-## ⚒️ TODO
-
-* [ ] Complete this repository
-
 ## 🔗 Contents
 
-- [ ] Models
-- [ ] Code
-- [x] [Results](#-results)
-- [x] [Citation](#citation)
-- [x] [Acknowledgements](#-acknowledgements)
+- [Installation](#-installation)
+- [Data Preparation](#-data-preparation)
+- [Usage](#-usage)
+- [Code Structure](#-code-structure)
+- [Results](#-results)
+- [Citation](#citation)
+- [Acknowledgements](#-acknowledgements)
+
+## 🔧 Installation
+
+Requires an NVIDIA GPU (reproduced on a single H100-80GB).
+
+```bash
+git clone --recurse-submodules https://github.com/XIANGLONGYAN/ReCalKV.git
+cd ReCalKV
+
+conda create -n recalkv python=3.10 -y
+conda activate recalkv
+pip install -r requirements.txt
+
+# lm-evaluation-harness (provides lm-eval, used by run_lm_eval.py)
+pip install -e 3rdparty/lm-evaluation-harness
+
+# fast-hadamard-transform: ONLY needed for KV-cache quantization (--lt_hadamard).
+# It builds a CUDA extension matching your PyTorch CUDA version.
+pip install -e 3rdparty/fast-hadamard-transform
+```
+
+> **Note:** `transformers>=4.43` is required (the compression code uses the
+> `position_embeddings` decoder API introduced in the 4.43 refactor), and the
+> LLaMA/Mistral tokenizers need `sentencepiece`. Both are pinned in
+> `requirements.txt`.
+
+## 📚 Data Preparation
+
+Calibration/evaluation datasets are loaded from `$RECALKV_DATA_ROOT`
+(default `./data`). Download them once:
+
+```bash
+# Optional HF mirror: export HF_ENDPOINT=https://hf-mirror.com
+python prepare_data.py --data_root ./data --datasets wikitext,ptb,c4
+```
+
+## 🚀 Usage
+
+`runcode.sh` contains a full end-to-end example. The main steps:
+
+### 1. Compress (HSR + OCMF)
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python compress.py \
+    --model_id /path/to/Llama-2-7b-hf \
+    --calib_dataset wikitext2 \
+    --decompose_method ours \
+    --search_method fisher_uniform \
+    --param_ratio_target 0.5 \
+    --head_group_size 4 \
+    --calib_nsamples 256 \
+    --updating_nsamples 256 \
+    --updating_dataset wikitext2 \
+    --dump_huggingface_model \
+    --use_cache
+```
+
+`--param_ratio_target` is the target KV-cache compression ratio (e.g. `0.5`,
+`0.6`, `0.7`). The compressed model is written to `output_model/`.
+
+`--decompose_method` selects the variant: `ours` (ReCalKV, HSR + OCMF),
+`ours_reorder` (HSR only), `ours_calib` (value calibration only),
+`ours_baseline` (neither), or `whiten` (Palu baseline).
+
+### 2. Perplexity
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python run_ppl_eval.py \
+    --model_name_or_path output_model/<compressed_model> \
+    --datasets wikitext2,ptb,c4 --seqlen 2048
+```
+
+Add `--lt_bits 3 --lt_hadamard` to evaluate with 3-bit low-rank-aware KV quantization.
+
+### 3. Zero-shot accuracy
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python run_lm_eval.py \
+    --model_name_or_path output_model/<compressed_model> \
+    --tasks "openbookqa,hellaswag,piqa,arc_easy,arc_challenge,winogrande"
+```
+
+### 4. LongBench
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python run_long_bench.py \
+    --model_name_or_path output_model/<compressed_model> \
+    --datasets "triviaqa,qasper,trec,samsum,lcc,repobench-p,qmsum,multi_news"
+```
+
+Pass `--flash2` to enable FlashAttention-2 for much faster generation.
+
+## 📂 Code Structure
+
+| Component | Location |
+| --- | --- |
+| Pipeline entry point | `compress.py` |
+| Fisher-guided rank allocation | `palu/rank_search.py` |
+| ReCalKV compression (HSR + value calibration) | `palu/decomposition.py` (`compress_model_ours`) |
+| HSR: CKA head reorder + grouped SVD | `palu/model/modules/svd_linear.py` (`from_linear_whiten_reorder`) |
+| Value calibration | `palu/model/modules/svd_linear.py` (`from_linear_adasvd`) |
+| Fused Triton attention kernel | `kernel/` |
 
 ## 🔎 Results
 
@@ -73,4 +174,7 @@ If you find the code helpful in your research or work, please cite the following
 
 ## 💡 Acknowledgements
 
-This work is released under the Apache 2.0 license.
+This work is released under the Apache 2.0 license. The code is built upon
+[Palu](https://github.com/shadowpa0327/Palu), and also benefits from
+[SVD-LLM](https://github.com/AIoT-MLSys-Lab/SVD-LLM) and
+[lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness).

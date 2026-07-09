@@ -1,0 +1,32 @@
+# Core deep learning stack
+# NOTE: transformers>=4.43 is REQUIRED. The compression code passes
+# `position_embeddings` to the decoder layers, an API introduced in the 4.43
+# attention refactor. The environment used for reproduction pins 4.44.2.
+torch==2.4.0
+triton==3.0.0
+transformers==4.44.2
+tokenizers==0.19.1
+accelerate==0.32.1
+datasets==2.19.2
+sentencepiece==0.2.1          # required by the LLaMA / Mistral tokenizers
+numpy==1.26.4
+protobuf==4.25.1
+
+# Utilities
+click==8.1.7
+einops==0.8.0
+omegaconf==2.3.0
+yacs==0.1.8
+tqdm==4.66.1
+loguru==0.7.2
+
+# LongBench evaluation
+jieba==0.42.1
+rouge==1.0.1
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.25.1   # speeds up fuzzywuzzy
+fastchat==0.1.0
+
+# 3rd-party libraries (installed separately, see README):
+#   pip install -e 3rdparty/lm-evaluation-harness          # provides lm-eval==0.4.2
+#   pip install -e 3rdparty/fast-hadamard-transform         # only needed for KV quantization
