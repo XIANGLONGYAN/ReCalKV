@@ -37,7 +37,6 @@ Xianglong Yan, [Zhiteng Li](https://zhitengli.github.io), Tianao Zhang, [Haotong
 - [Data Preparation](#-data-preparation)
 - [Usage](#-usage)
 - [Code Structure](#-code-structure)
-- [Results](#-results)
 - [Citation](#citation)
 - [Acknowledgements](#-acknowledgements)
 
@@ -142,20 +141,6 @@ Pass `--flash2` to enable FlashAttention-2 for much faster generation.
 | HSR: CKA head reorder + grouped SVD | `palu/model/modules/svd_linear.py` (`from_linear_whiten_reorder`) |
 | Value calibration | `palu/model/modules/svd_linear.py` (`from_linear_adasvd`) |
 | Fused Triton attention kernel | `kernel/` |
-
-## 🔎 Results
-
-ReCalKV achieves superior zero-shot performance under 50%–70% KV cache compression, with low perplexity on language modeling tasks and high accuracy on zero-shot QA benchmarks.
-
-<p align="center">
-  <img width="100%" src="table1.png">
-</p>
-
-ReCalKV achieves strong and consistent performance across all LongBench tasks under 50%–70% KV cache compression, maintaining high accuracy and overall average scores.
-
-<p align="center">
-  <img width="100%" src="table2.png">
-</p>
 
 ## Citation
 
